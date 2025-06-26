@@ -5,6 +5,9 @@ import * as fs from 'fs';
 import http from 'http';
 import https from 'https';
 import * as GitHubApp from './comments_schema.ts';
+import dotenv from 'dotenv';
+
+dotenv.config()
 
 var RSAkey = new NodeRSA(
     fs.readFileSync('id_rsa.key','utf8'), 'pkcs1-private-pem'

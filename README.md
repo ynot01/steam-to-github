@@ -14,7 +14,9 @@ Requires [npm](https://www.npmjs.com/), once you install use `npm i` to install 
 
 Requires [tsx](https://tsx.is/), run `npm i -g tsx`
 
-`run.ps1` is included for debugging convenience, but you should use `run.sh` to run as a daemon on a Linux host
+To debug, run `tsx index.ts`
+
+The following command is recommended for production (on Linux): `setsid tsx index.ts > ./steam-to-github.log 2>&1 < /dev/null &`
 
 Your generated pkcs1-pem RSA key should be in the project root as `id_rsa.key`
 
