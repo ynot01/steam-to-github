@@ -1,0 +1,1 @@
+source .env && setsid tsx index.ts > ./steam-to-github.log 2>&1 < /dev/null &
