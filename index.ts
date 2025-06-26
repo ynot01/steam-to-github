@@ -72,6 +72,11 @@ const smee = new SmeeClient({
   target: 'http://localhost:16251',
   logger: console
 })
+// dummy http server is only here to suppress SmeeClient redirect
+http.createServer(function (req, res) {
+  res.writeHead(200);
+  res.end();
+}).listen(16251);
 
 const events = await smee.start()
 
@@ -111,11 +116,6 @@ events.onmessage = (ev) => {
         })
     } catch {}
 }
-
-http.createServer(function (req, res) {
-  res.writeHead(200);
-  res.end();
-}).listen(16251);
 
 const octokit = new Octokit({
   auth: authToken
