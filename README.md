@@ -65,6 +65,3 @@ Type should be "bug" or "suggestion" before encoding
 
 GitHub has a rate limit of 5,000 requests per hour for authenticated users. If you are getting thousands of bug reports an hour, consider using paid or self-hosted services.
 
-I should probably add ESLint or something and add Docker functionality
-
-SmeeClient forcibly redirects the payload and cries an error if it can't, so this also hosts an empty http server at localhost:16251
