@@ -150,7 +150,7 @@ async function refreshBanList() {
             }
             var bannedList:Array<string> = banList.banned
             var banIndex = bannedList.indexOf(banId.trim())
-            if (banIndex !== -1) {
+            if (banIndex > -1) {
                 bannedList.splice(banIndex, 1)
             }
             banList.banned = bannedList
