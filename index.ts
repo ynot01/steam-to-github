@@ -140,6 +140,9 @@ async function refreshBanList() {
                 continue
             }
             var bannedList:Array<string> = banList.banned
+            if (bannedList.indexOf(banId.trim()) > -1) {
+                continue
+            }
             bannedList.push(banId.trim())
             banList.banned = bannedList
             fs.writeFileSync("banlist.json", JSON.stringify(banList))
