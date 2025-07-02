@@ -122,49 +122,51 @@ const octokit = new Octokit({
 })
 
 async function refreshBanList() {
-    var resp = await octokit.request(`GET /repos/${repoOwner}/${repoName}/issues/comments`, {
-        owner: repoOwner,
-        repo: repoName,
-        headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
-    })
-    var data:GitHubApp.MySchema = resp.data
-    for(const comment of data) {
-        if (readIssueIDs.readed.indexOf(comment.id) > -1) {
-            continue
-        }
-        if (comment.body?.startsWith("!ban")) {
-            var banId = comment.body.slice(5)
-            if (Number.isNaN(Number(banId)) || Number(banId) == 0) {
+    try {
+        var resp = await octokit.request(`GET /repos/${repoOwner}/${repoName}/issues/comments`, {
+            owner: repoOwner,
+            repo: repoName,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+        })
+        var data:GitHubApp.MySchema = resp.data
+        for(const comment of data) {
+            if (readIssueIDs.readed.indexOf(comment.id) > -1) {
                 continue
             }
-            var bannedList:Array<string> = banList.banned
-            if (bannedList.indexOf(banId.trim()) > -1) {
-                continue
+            if (comment.body?.startsWith("!ban")) {
+                var banId = comment.body.slice(5)
+                if (Number.isNaN(Number(banId)) || Number(banId) == 0) {
+                    continue
+                }
+                var bannedList:Array<string> = banList.banned
+                if (bannedList.indexOf(banId.trim()) > -1) {
+                    continue
+                }
+                bannedList.push(banId.trim())
+                banList.banned = bannedList
+                fs.writeFileSync("banlist.json", JSON.stringify(banList))
+            } else if (comment.body?.startsWith("!unban")) {
+                var banId = comment.body.slice(5)
+                if (Number.isNaN(Number(banId)) || Number(banId) == 0) {
+                    continue
+                }
+                var bannedList:Array<string> = banList.banned
+                var banIndex = bannedList.indexOf(banId.trim())
+                if (banIndex > -1) {
+                    bannedList.splice(banIndex, 1)
+                }
+                banList.banned = bannedList
+                fs.writeFileSync("banlist.json", JSON.stringify(banList))
             }
-            bannedList.push(banId.trim())
-            banList.banned = bannedList
-            fs.writeFileSync("banlist.json", JSON.stringify(banList))
-        } else if (comment.body?.startsWith("!unban")) {
-            var banId = comment.body.slice(5)
-            if (Number.isNaN(Number(banId)) || Number(banId) == 0) {
-                continue
-            }
-            var bannedList:Array<string> = banList.banned
-            var banIndex = bannedList.indexOf(banId.trim())
-            if (banIndex > -1) {
-                bannedList.splice(banIndex, 1)
-            }
-            banList.banned = bannedList
-            fs.writeFileSync("banlist.json", JSON.stringify(banList))
+            
+            var readedList:Array<number> = readIssueIDs.readed
+            readedList.push(comment.id)
+            readIssueIDs.readed = readedList
+            fs.writeFileSync("readids.json", JSON.stringify(readIssueIDs))
         }
-        
-        var readedList:Array<number> = readIssueIDs.readed
-        readedList.push(comment.id)
-        readIssueIDs.readed = readedList
-        fs.writeFileSync("readids.json", JSON.stringify(readIssueIDs))
-    }
+    } catch {}
 }
 setInterval(refreshBanList, 20000);
 
