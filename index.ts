@@ -1,4 +1,4 @@
-import { Octokit } from "octokit"
+import { Octokit, RequestError } from "octokit"
 import SmeeClient from 'smee-client'
 import NodeRSA from 'node-rsa'
 import * as fs from 'fs';
@@ -187,16 +187,24 @@ ${description}
 `
     var label:string = typeCast[type]
     if (label == null || label == "") { return }
-    await octokit.request(`POST /repos/${repoOwner}/${repoName}/issues`, {
-        owner: repoOwner,
-        repo: repoName,
-        title: title,
-        body: issueBody,
-        labels: [
-            label
-        ],
-        headers: {
-            'X-GitHub-Api-Version': '2022-11-28'
+    try {
+        await octokit.request(`POST /repos/${repoOwner}/${repoName}/issues`, {
+            owner: repoOwner,
+            repo: repoName,
+            title: title,
+            body: issueBody,
+            labels: [
+                label
+            ],
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+        })
+    } catch (error) {
+        if (error instanceof RequestError) {
+            console.log(error.message)
+        } else {
+            throw error
         }
-    })
+    }
 }
