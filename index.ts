@@ -205,9 +205,9 @@ ${description}
             "success": uuid
         })
         var postReq = https.request({
-            hostname: smeeLink,
+            hostname: "smee.io",
             port: 443,
-            path: '/',
+            path: '/'+smeeLink.match(/(?<=https:\/\/smee.io\/).*/)?.toString(),
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
