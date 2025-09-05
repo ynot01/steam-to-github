@@ -91,6 +91,7 @@ events.onmessage = (ev) => {
         const descIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.description, "base64"), "utf8")
         const steamToken:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.steamtoken, "base64"), "utf8")
         const typeIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.type, "base64"), "utf8")
+        const uuid:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.uuid, "base64"), "utf8")
         const urlGet = // https://partner.steamgames.com/doc/webapi/ISteamUserAuth
             "https://partner.steam-api.com/ISteamUserAuth/AuthenticateUserTicket/v1/"+
             "?key="+devKey+
@@ -110,7 +111,7 @@ events.onmessage = (ev) => {
                     if ( (bannedList.indexOf(params.ownersteamid) > -1) || (bannedList.indexOf(params.steamid) > -1) ) {
                         return
                     }
-                    postIssue(titleIssue, descIssue, params.ownersteamid, params.steamid, typeIssue)
+                    postIssue(titleIssue, descIssue, params.ownersteamid, params.steamid, typeIssue, uuid)
                 } catch {}
             })
         })
@@ -170,7 +171,7 @@ async function refreshBanList() {
 }
 setInterval(refreshBanList, 20000);
 
-async function postIssue(title:string, description:string, ownersteamid:string, steamid:string, type:string): Promise<void> {
+async function postIssue(title:string, description:string, ownersteamid:string, steamid:string, type:string, uuid:string): Promise<void> {
     if (title == "" || description == "" || type == "") { return }
     var issueBody = `
 Owner: https://steamcommunity.com/profiles/${ownersteamid}
@@ -200,6 +201,23 @@ ${description}
                 'X-GitHub-Api-Version': '2022-11-28'
             }
         })
+        var postMsg = JSON.stringify({
+            "success": uuid
+        })
+        var postReq = https.request({
+            hostname: smeeLink,
+            port: 443,
+            path: '/',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': postMsg.length
+            }
+        }, (_) => {
+
+        })
+        postReq.write(postMsg)
+        postReq.end()
     } catch (error) {
         if (error instanceof RequestError) {
             console.log(error.message)
