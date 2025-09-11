@@ -134,7 +134,7 @@ const octokit = new Octokit({
 async function refreshBanList() {
     var currentTimeMillis = Date.now()
     for (const token in tokenRecent) {
-        if (tokenRecent[token] > currentTimeMillis) {
+        if (currentTimeMillis > tokenRecent[token]) {
             delete tokenRecent[token]
         }
     }
