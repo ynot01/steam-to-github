@@ -52,7 +52,8 @@ It expects payloads to look like this (values are UTF-8 then encrypted to base64
     "title": "encoded_title",
     "description": "encoded_description",
     "steamtoken": "encoded_message",
-    "type": "encoded_type"
+    "type": "encoded_type",
+    "uuid": "encoded_uuidv4"
 }
 ```
 Token should be in hex format before encoding
