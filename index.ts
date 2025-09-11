@@ -62,6 +62,10 @@ if (!fs.existsSync("readids.json")) {
 }
 var readIssueIDs:readIssueIDsType = JSON.parse(fs.readFileSync("readids.json",'utf8'))
 
+// "TOKEN" = Date.now()
+var tokenRecent: { [id: string] : number; } = {}
+var tokenExpires: number = (1000 * 60 * 60) // 1 hour
+
 const typeCast = {
     "bug":"bug",
     "suggestion":"enhancement"
@@ -92,6 +96,11 @@ events.onmessage = (ev) => {
         const steamToken:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.steamtoken, "base64"), "utf8")
         const typeIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.type, "base64"), "utf8")
         const uuid:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.uuid, "base64"), "utf8")
+        if (tokenRecent[steamToken]) { // A token should not be used twice!
+            return
+        }
+        // After use, it should be invalidated by the client (in about 5 seconds at most), so we can free it from memory later
+        tokenRecent[steamToken] = Date.now() + tokenExpires
         const urlGet = // https://partner.steamgames.com/doc/webapi/ISteamUserAuth
             "https://partner.steam-api.com/ISteamUserAuth/AuthenticateUserTicket/v1/"+
             "?key="+devKey+
@@ -123,6 +132,12 @@ const octokit = new Octokit({
 })
 
 async function refreshBanList() {
+    var currentTimeMillis = Date.now()
+    for (const token in tokenRecent) {
+        if (tokenRecent[token] > currentTimeMillis) {
+            delete tokenRecent[token]
+        }
+    }
     try {
         var resp = await octokit.request(`GET /repos/${repoOwner}/${repoName}/issues/comments`, {
             owner: repoOwner,
