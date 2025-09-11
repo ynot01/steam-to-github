@@ -96,7 +96,7 @@ events.onmessage = (ev) => {
         const steamToken:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.steamtoken, "base64"), "utf8")
         const typeIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.type, "base64"), "utf8")
         const uuid:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.uuid, "base64"), "utf8")
-        if (tokenRecent[steamToken]) { // A token should not be used twice!
+        if (tokenRecent.hasOwnProperty(steamToken)) { // A token should not be used twice!
             return
         }
         // After use, it should be invalidated by the client (in about 5 seconds at most), so we can free it from memory later
