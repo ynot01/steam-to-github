@@ -96,6 +96,12 @@ events.onmessage = (ev) => {
         const steamToken:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.steamtoken, "base64"), "utf8")
         const typeIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.type, "base64"), "utf8")
         const uuid:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.uuid, "base64"), "utf8")
+        // uuidv4 validator
+        // https://stackoverflow.com/a/13653180
+        // https://creativecommons.org/licenses/by-sa/4.0/
+        if (!(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(uuid))) {
+            return
+        }
         if (Object.prototype.hasOwnProperty.call(tokenRecent, steamToken)) { // A token should not be used twice!
             return
         }
