@@ -99,15 +99,15 @@ events.onmessage = (ev) => {
         const aesKey:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.pw, "base64"), "buffer")
         const aesIV:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.iv, "base64"), "buffer")
         const decipher = createDecipheriv('aes-256-cbc', aesKey, aesIV)
-        let decrypted:string = decipher.update(JSON.parse(ev.data).body.title, 'base64', 'utf8'); decrypted += decipher.final('utf8');
+        let decrypted:string = decipher.update(JSON.parse(ev.data).body.title, 'base64', 'utf8'); decrypted += decipher.final();
         const titleIssue:string = decrypted
-        decrypted = decipher.update(JSON.parse(ev.data).body.description, 'base64', 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.description, 'base64', 'utf8'); decrypted += decipher.final();
         const descIssue:string = decrypted
-        decrypted = decipher.update(JSON.parse(ev.data).body.steamtoken, 'base64', 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.steamtoken, 'base64', 'utf8'); decrypted += decipher.final();
         const steamToken:string = decrypted
-        decrypted = decipher.update(JSON.parse(ev.data).body.type, 'base64', 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.type, 'base64', 'utf8'); decrypted += decipher.final();
         const typeIssue:string = decrypted
-        decrypted = decipher.update(JSON.parse(ev.data).body.uuid, 'base64', 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.uuid, 'base64', 'utf8'); decrypted += decipher.final();
         const uuid:string = decrypted
         // uuidv4 validator
         // https://stackoverflow.com/a/13653180
