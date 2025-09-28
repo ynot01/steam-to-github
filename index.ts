@@ -148,7 +148,10 @@ events.onmessage = (ev) => {
                 } catch {}
             })
         })
-    } catch {}
+    } catch (err)
+    {
+        console.log(err)
+    }
 }
 
 const octokit = new Octokit({
