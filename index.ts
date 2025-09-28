@@ -89,7 +89,10 @@ const events = await smee.start()
 events.onerror = (ev) => {
     try {
         console.log(ev.message)
-    } catch {}
+    } catch (err)
+    {
+        console.log(err)
+    }
 }
 events.onmessage = (ev) => {
     try {
@@ -145,7 +148,10 @@ events.onmessage = (ev) => {
                         return
                     }
                     postIssue(titleIssue, descIssue, params.ownersteamid, params.steamid, typeIssue, uuid)
-                } catch {}
+                } catch (err)
+                {
+                    console.log(err)
+                }
             })
         })
     } catch (err)
@@ -209,7 +215,10 @@ async function refreshBanList() {
             readIssueIDs.readed = readedList
             fs.writeFileSync("readids.json", JSON.stringify(readIssueIDs))
         }
-    } catch {}
+    } catch (err)
+    {
+        console.log(err)
+    }
 }
 setInterval(refreshBanList, 20000);
 
