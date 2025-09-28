@@ -1,11 +1,12 @@
 import { Octokit, RequestError } from "octokit"
 import SmeeClient from 'smee-client'
 import NodeRSA from 'node-rsa'
-import * as fs from 'fs';
-import http from 'http';
-import https from 'https';
-import * as GitHubApp from './comments_schema.ts';
-import dotenv from 'dotenv';
+import { scryptSync, createDecipheriv } from 'node:crypto'
+import * as fs from 'fs'
+import http from 'http'
+import https from 'https'
+import * as GitHubApp from './comments_schema.ts'
+import dotenv from 'dotenv'
 
 dotenv.config()
 
@@ -68,7 +69,8 @@ var tokenExpires: number = (1000 * 60 * 60) // 1 hour
 
 const typeCast = {
     "bug":"bug",
-    "suggestion":"enhancement"
+    "suggestion":"enhancement",
+    "hardware survey":"documentation"
 }
 
 const smee = new SmeeClient({
@@ -91,11 +93,21 @@ events.onerror = (ev) => {
 }
 events.onmessage = (ev) => {
     try {
-        const titleIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.title, "base64"), "utf8")
-        const descIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.description, "base64"), "utf8")
-        const steamToken:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.steamtoken, "base64"), "utf8")
-        const typeIssue:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.type, "base64"), "utf8")
-        const uuid:string = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.uuid, "base64"), "utf8")
+        const aesKey:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.pw, "base64"), "buffer")
+        const aesIV:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.iv, "base64"), "buffer")
+        const decipher = createDecipheriv('aes-192-cbc', aesKey, aesIV)
+        let decrypted:string = decipher.update(Buffer.from(JSON.parse(ev.data).body.title, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        console.log("Got decrypted")
+        console.log(decrypted)
+        const titleIssue:string = decrypted
+        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.description, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        const descIssue:string = decrypted
+        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.steamtoken, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        const steamToken:string = decrypted
+        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.type, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        const typeIssue:string = decrypted
+        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.uuid, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        const uuid:string = decrypted
         // uuidv4 validator
         // https://stackoverflow.com/a/13653180
         // https://creativecommons.org/licenses/by-sa/4.0/
@@ -207,7 +219,7 @@ Use \`!unban <steamid64>\` to unban a steamid
 
 ${description}
 `
-    var label:string = typeCast[type]
+    var label:string = typeCast[type as keyof typeof typeCast]
     if (label == null || label == "") { return }
     try {
         await octokit.request(`POST /repos/${repoOwner}/${repoName}/issues`, {
