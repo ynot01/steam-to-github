@@ -102,17 +102,17 @@ events.onmessage = (ev) => {
         const decipher = createDecipheriv('aes-256-cbc', aesKey, aesIV)
         console.log("Got decipher")
         console.log(decipher.toString())
-        let decrypted:string = decipher.update(Buffer.from(JSON.parse(ev.data).body.title, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        let decrypted:string = decipher.update(JSON.parse(ev.data).body.title, 'base64', 'utf8'); decrypted += decipher.final('utf8');
         console.log("Got decrypted")
         console.log(decrypted)
         const titleIssue:string = decrypted
-        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.description, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.description, 'base64', 'utf8'); decrypted += decipher.final('utf8');
         const descIssue:string = decrypted
-        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.steamtoken, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.steamtoken, 'base64', 'utf8'); decrypted += decipher.final('utf8');
         const steamToken:string = decrypted
-        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.type, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.type, 'base64', 'utf8'); decrypted += decipher.final('utf8');
         const typeIssue:string = decrypted
-        decrypted = decipher.update(Buffer.from(JSON.parse(ev.data).body.uuid, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
+        decrypted = decipher.update(JSON.parse(ev.data).body.uuid, 'base64', 'utf8'); decrypted += decipher.final('utf8');
         const uuid:string = decrypted
         // uuidv4 validator
         // https://stackoverflow.com/a/13653180
