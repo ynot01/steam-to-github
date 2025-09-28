@@ -130,18 +130,18 @@ events.onmessage = (ev) => {
         }
         // After use, it should be invalidated by the client (in about 5 seconds at most), so we can free it from memory later
         tokenRecent[steamToken] = Date.now() + tokenExpires
-        const urlGet = // https://partner.steamgames.com/doc/webapi/ISteamUserAuth
+        const verifyTicket = // https://partner.steamgames.com/doc/webapi/ISteamUserAuth
             "https://partner.steam-api.com/ISteamUserAuth/AuthenticateUserTicket/v1/"+
             "?key="+devKey+
             "&appid="+appID+
             "&ticket="+steamToken+
             "&identity="+identity
         console.log(`${typeIssue} - ${titleIssue} - ${descIssue}`)
-        https.get(urlGet, (res) => {
+        https.get(verifyTicket, (res) => {
             res.on('data', (htdata:Buffer) => {
                 try {
-                    const body = JSON.parse(htdata.toString())
-                    const params = body.response.params
+                    const bodyVerify = JSON.parse(htdata.toString())
+                    const params = bodyVerify.response.params
                     if (params.vacbanned || params.publisherbanned) {
                         return
                     }
@@ -149,7 +149,28 @@ events.onmessage = (ev) => {
                     if ( (bannedList.indexOf(params.ownersteamid) > -1) || (bannedList.indexOf(params.steamid) > -1) ) {
                         return
                     }
-                    postIssue(titleIssue, descIssue, params.ownersteamid, params.steamid, typeIssue, uuid)
+                    const nicknameFetch = // https://partner.steamgames.com/doc/webapi/ISteamUser
+                        "https://partner.steam-api.com/ISteamUser/GetPlayerSummaries/v2/"+
+                        "?key="+devKey+
+                        "&steamids="+params.ownersteamid+","+params.steamid
+                    https.get(nicknameFetch, (res) => {
+                        res.on('data', (htdata:Buffer) => {
+                            try {
+                                const bodyNicknames = JSON.parse(htdata.toString())
+                                const playerArray:any[] = bodyNicknames.response.players
+                                let ownerNickname = "" // 7656123123123123 - Nickname
+                                let posterNickname = ""
+                                for (var i = 0; i < playerArray.length; i++) {
+                                    if (playerArray[i].steamid == params.ownersteamid) { ownerNickname = playerArray[i].steamid+" - "+playerArray[i].personaname }
+                                    if (playerArray[i].steamid == params.steamid) { posterNickname = playerArray[i].steamid+" - "+playerArray[i].personaname }
+                                }
+                                postIssue(titleIssue, descIssue, ownerNickname, posterNickname, typeIssue, uuid)
+                            } catch (err)
+                            {
+                                console.log(err)
+                            }
+                        })
+                    })
                 } catch (err)
                 {
                     console.log(err)
