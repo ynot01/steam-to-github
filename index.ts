@@ -101,15 +101,21 @@ events.onmessage = (ev) => {
         const decipher = createDecipheriv('aes-256-cbc', aesKey, aesIV)
         decipher.setAutoPadding(false)
         const titleIssue:string = decipher.update(JSON.parse(ev.data).body.title, 'base64', 'utf8')
+        console.log(titleIssue)
         const descIssue:string = decipher.update(JSON.parse(ev.data).body.description, 'base64', 'utf8')
+        console.log(descIssue)
         const steamToken:string = decipher.update(JSON.parse(ev.data).body.steamtoken, 'base64', 'utf8')
+        console.log(steamToken)
         const typeIssue:string = decipher.update(JSON.parse(ev.data).body.type, 'base64', 'utf8')
+        console.log(typeIssue)
         const uuid:string = decipher.update(JSON.parse(ev.data).body.uuid, 'base64', 'utf8')
+        console.log(uuid)
         decipher.final()
         // uuidv4 validator
         // https://stackoverflow.com/a/13653180
         // https://creativecommons.org/licenses/by-sa/4.0/
         if (!(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(uuid))) {
+            console.log("Invalid UUID provided")
             return
         }
         if (Object.prototype.hasOwnProperty.call(tokenRecent, steamToken)) { // A token should not be used twice!
