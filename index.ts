@@ -97,17 +97,9 @@ events.onerror = (ev) => {
 events.onmessage = (ev) => {
     try {
         const aesKey:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.pw, "base64"), "buffer")
-        console.log("Got aesKey")
-        console.log(aesKey.toString())
         const aesIV:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.iv, "base64"), "buffer")
-        console.log("Got aesIV")
-        console.log(aesIV.toString())
         const decipher = createDecipheriv('aes-256-cbc', aesKey, aesIV)
-        console.log("Got decipher")
-        console.log(decipher.toString())
         let decrypted:string = decipher.update(JSON.parse(ev.data).body.title, 'base64', 'utf8'); decrypted += decipher.final('utf8');
-        console.log("Got decrypted")
-        console.log(decrypted)
         const titleIssue:string = decrypted
         decrypted = decipher.update(JSON.parse(ev.data).body.description, 'base64', 'utf8'); decrypted += decipher.final('utf8');
         const descIssue:string = decrypted
