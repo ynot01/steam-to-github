@@ -99,7 +99,7 @@ events.onmessage = (ev) => {
         const aesIV:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.iv, "base64"), "buffer")
         console.log("Got aesIV")
         console.log(aesIV.toString())
-        const decipher = createDecipheriv('aes-192-cbc', aesKey, aesIV)
+        const decipher = createDecipheriv('aes-256-cbc', aesKey, aesIV)
         console.log("Got decipher")
         console.log(decipher.toString())
         let decrypted:string = decipher.update(Buffer.from(JSON.parse(ev.data).body.title, "base64"), undefined, 'utf8'); decrypted += decipher.final('utf8');
