@@ -99,6 +99,7 @@ events.onmessage = (ev) => {
         const aesKey:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.pw, "base64"), "buffer")
         const aesIV:Buffer = RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.iv, "base64"), "buffer")
         const decipher = createDecipheriv('aes-256-cbc', aesKey, aesIV)
+        decipher.setAutoPadding(false)
         console.log(RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.pw, "base64"), "hex"))
         console.log(RSAkey.decrypt(Buffer.from(JSON.parse(ev.data).body.iv, "base64"), "hex"))
         console.log(JSON.parse(ev.data).body.title)
