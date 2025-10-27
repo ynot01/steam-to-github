@@ -57,7 +57,7 @@ It expects payloads to look like this (values are UTF-8 then encrypted to base64
     "type": "encoded_type",
     "uuid": "encoded_uuidv4",
     "pw": "encoded_password",
-    "iv": "+encoded_iv"
+    "iv": "encoded_iv"
 }
 ```
 Token should be in hex format before encoding
