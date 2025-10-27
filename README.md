@@ -48,7 +48,7 @@ Uses RSA pkcs1-pem and AES-256-CBC
 
 Each is encoded with AES except for "pw" and "iv" which is RSA, [see here for why](https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/)
 
-It expects payloads to look like this (values are UTF-8 then encrypted to base64-encoded RSA messages with the public key)
+It expects payloads to look like this (values are UTF-8 then encrypted to base64-encoded AES messages, except for pw/iv which are RSA encrypted with the public key)
 ```
 {
     "title": "encoded_title",
