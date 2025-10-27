@@ -44,7 +44,9 @@ Create a `.env` file (example.env as an example) and set them to the following
 
 ## Usage game-side
 
-Uses RSA pkcs1-pem
+Uses RSA pkcs1-pem and AES-256-CBC
+
+Each is encoded with AES except for "pw" and "iv" which is RSA, [see here for why](https://mbed-tls.readthedocs.io/en/latest/kb/cryptography/rsa-encryption-maximum-data-size/)
 
 It expects payloads to look like this (values are UTF-8 then encrypted to base64-encoded RSA messages with the public key)
 ```
@@ -53,7 +55,9 @@ It expects payloads to look like this (values are UTF-8 then encrypted to base64
     "description": "encoded_description",
     "steamtoken": "encoded_message",
     "type": "encoded_type",
-    "uuid": "encoded_uuidv4"
+    "uuid": "encoded_uuidv4",
+    "pw": "encoded_password",
+    "iv": "+encoded_iv"
 }
 ```
 Token should be in hex format before encoding
